@@ -19,8 +19,3 @@ def canUnlockAll(boxes):
     
     # If all boxes are opened, return True; otherwise, return False
     return all(opened)
-
-# Example usage:
-boxes = [[1], [2], [3], []]
-result = canUnlockAll(boxes)
-print(result)  # Output: True (all boxes can be opened)
