@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 def canUnlockAll(boxes):
     # Create a list to keep track of the opened boxes
     opened = [False] * len(boxes)
