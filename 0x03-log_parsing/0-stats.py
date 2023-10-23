@@ -1,53 +1,49 @@
 #!/usr/bin/python3
-import random
+"""a script that reads stdin line by line and computes metrics:"""
 import sys
-from time import sleep
-import datetime
 
-# Initialize variables to store metrics
+
+def print_msg(dict_sc, total_file_size):
+    """Print method."""
+
+    print("File size: {}".format(total_file_size))
+    for key, val in sorted(dict_sc.items()):
+        if val != 0:
+            print("{}: {}".format(key, val))
+
+
 total_file_size = 0
-status_code_counts = {
-    200: 0,
-    301: 0,
-    400: 0,
-    401: 0,
-    403: 0,
-    404: 0,
-    405: 0,
-    500: 0,
-}
-
-line_count = 0
+code = 0
+counter = 0
+status_code_count = {
+        "200": 0,
+        "301": 0,
+        "400": 0,
+        "401": 0,
+        "403": 0,
+        "404": 0,
+        "405": 0,
+        "500": 0
+    }
 
 try:
     for line in sys.stdin:
-        line = line.strip()
+        parsed_line = line.split()
+        parsed_line = parsed_line[::-1]
 
-        # Parse the line using regular expressions to match the specified format
-        import re
-        match = re.match(r'(\d+\.\d+\.\d+\.\d+) - \[.*\] "GET /projects/260 HTTP/1.1" (\d+) (\d+)', line)
-        if match:
-            ip, status_code, file_size = match.groups()
+        if len(parsed_line) > 2:
+            counter += 1
 
-            # Update metrics
-            status_code = int(status_code)
-            file_size = int(file_size)
-            total_file_size += file_size
+            if counter <= 10:
+                total_file_size += int(parsed_line[0])
+                code = parsed_line[1]
 
-            if status_code in status_code_counts:
-                status_code_counts[status_code] += 1
+                if (code in status_code_count.keys()):
+                    status_code_count[code] += 1
 
-            line_count += 1
+            if (counter == 10):
+                print_msg(status_code_count, total_file_size)
+                counter = 0
 
-        if line_count % 10 == 0:
-            print("Total file size: File size:", total_file_size)
-            for code, count in sorted(status_code_counts.items()):
-                if count > 0:
-                    print(f"{code}: {count}")
-
-except KeyboardInterrupt:
-    # Handle CTRL+C interruption
-    print("Total file size: File size:", total_file_size)
-    for code, count in sorted(status_code_counts.items()):
-        if count > 0:
-            print(f"{code}: {count}")
+finally:
+    print_msg(status_code_count, total_file_size)
