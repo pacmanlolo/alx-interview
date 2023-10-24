@@ -1,26 +1,27 @@
 #!/usr/bin/python3
 def validUTF8(data):
-    # Initialize a variable to keep track of the number of expected bytes for the next character.
-    expected_bytes = 0
-    
-    # Iterate through each integer in the data list.
+    # Initialize a variable to keep track of the number of bytes remaining for the current character
+    bytes_remaining = 0
+
+    # Iterate through each integer in the list
     for byte in data:
-        # Check if the current byte is a continuation byte (starts with '10').
-        if expected_bytes > 0:
-            if (byte >> 6) == 0b10:
-                expected_bytes -= 1
-                return True
+        # Check if the most significant bit is 0, indicating it's a start of a new character
+        if bytes_remaining == 0:
+            if (byte >> 7) == 0b0:
+                bytes_remaining = 0
+            elif (byte >> 5) == 0b110:
+                bytes_remaining = 1
+            elif (byte >> 4) == 0b1110:
+                bytes_remaining = 2
+            elif (byte >> 3) == 0b11110:
+                bytes_remaining = 3
             else:
                 return False
         else:
-            # Determine the number of expected bytes for the current character.
-            if (byte >> 7) == 0b0:
-                expected_bytes = 0  # Single-byte character (0xxxxxxx)
-            elif (byte >> 5) == 0b110:
-                expected_bytes = 1  # Two-byte character (110xxxxx)
-            elif (byte >> 4) == 0b1110:
-                expected_bytes = 2  # Three-byte character (1110xxxx)
-            elif (byte >> 3) == 0b11110:
-                expected_bytes = 3  # Four-byte character (11110xxx)
-            else:
+            # If it's not a start of a new character, it should start with the bit pattern '10'
+            if (byte >> 6) != 0b10:
                 return False
+            bytes_remaining -= 1
+
+    # If all bytes have been used, it's valid UTF-8
+    return bytes_remaining == 0
