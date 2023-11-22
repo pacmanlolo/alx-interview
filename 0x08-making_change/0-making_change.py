@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
-A function that determine the fewest number of coins
-needed to meet a given amount total.
+A function that determine the fewest number of 
+coins needed to meet a given amount total.
 """
 
 
